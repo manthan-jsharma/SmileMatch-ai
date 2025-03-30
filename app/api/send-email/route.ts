@@ -22,7 +22,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create a transporter
     let transporter;
 
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -39,17 +38,15 @@ export async function POST(request: Request) {
         },
       });
     } else {
-      // Use configured Gmail service
       transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
           user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS, // This should be an App Password
+          pass: process.env.EMAIL_PASS,
         },
       });
     }
 
-    // Create HTML email content
     const htmlContent = `
       <html>
         <head>
@@ -121,20 +118,18 @@ export async function POST(request: Request) {
       </html>
     `;
 
-    // Send the email
     const info = await transporter.sendMail({
       from: `"SmileMatch AI" <${
         process.env.EMAIL_USER || "smilematch@example.com"
       }>`,
       to: doctorEmail,
-      replyTo: patientEmail, // Set the patient's email as the reply-to address
+      replyTo: patientEmail,
       subject: `Veneer Consultation Request for ${patientName}`,
       html: htmlContent,
     });
 
     console.log("Message sent: %s", info.messageId);
 
-    // For test accounts, show the URL where the message can be viewed
     if (!process.env.EMAIL_USER) {
       console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
     }
